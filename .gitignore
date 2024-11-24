@@ -1,0 +1,42 @@
+.vs/
+.vsconfig/
+
+# Unity Generated Files
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+
+# Visual Studio/MonoDevelop
+.vscode/
+*.csproj
+*.sln
+*.userprefs
+
+# OS-Specific
+.DS_Store
+Thumbs.db
+
+# Version Control Metadata
+*.pidb
+*.swp
+*.wombat
+
+# Unity auto-generated metadata
+*.meta
+
+# Ignore crash reports
+CrashReports/
+
+# Ignore Unity Package Cache
+[Pp]ackages/*/PackageCache/
+
+# Ignore Addressable Asset System
+/Assets/AddressableAssetsData/AddressablesLink/
+
+# Ignore localization
+/Localization/.Temp/
+
