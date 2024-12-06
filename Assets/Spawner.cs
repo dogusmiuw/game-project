@@ -29,10 +29,14 @@ public class Spawner : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.CountOfPlayers == 1)
         {
-            PhotonNetwork.Instantiate("Player", new Vector3(24.91796f, 0f, 10.7367f), Quaternion.identity);
+            GameObject gameObject = PhotonNetwork.Instantiate("Player", new Vector3(24.91796f, 0f, 10.7367f), Quaternion.identity);
+
+            gameObject.GetComponent<Renderer>().material.color = Color.magenta;
         } else
         {
-            PhotonNetwork.Instantiate("Player", new Vector3(-26.02451f, 0f, 7.101749f), Quaternion.identity);
+            GameObject gameObject = PhotonNetwork.Instantiate("Player", new Vector3(-26.02451f, 0f, 7.101749f), Quaternion.identity);
+
+            gameObject.GetComponent<Renderer>().material.color = Color.yellow;
         }
     }
 
