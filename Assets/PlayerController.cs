@@ -7,6 +7,13 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Debug.Log("Checking for interactions...");
+        
+        if (InteractWithTree() == true)
+        {
+            Debug.Log("Tree interaction detected");
+            return;
+        }
         if (InteractWithCombat() == true)
         {
             return;
@@ -55,5 +62,22 @@ public class PlayerController : MonoBehaviour
     private static Ray GetMouseRay()
     {
         return Camera.main.ScreenPointToRay(Input.mousePosition);
+    }
+
+    private bool InteractWithTree()
+    {
+        RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
+        foreach (RaycastHit hit in hits)
+        {
+            TreeCuttable tree = hit.transform.GetComponent<TreeCuttable>();
+            if (tree == null) continue;
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                GetComponent<Fighter>().StartChopping(tree);
+            }
+            return true;
+        }
+        return false;
     }
 }
