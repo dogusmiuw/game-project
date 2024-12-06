@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,15 @@ public class Mover : MonoBehaviour
         {
             MoveToCursor();
         }
+        UpdateAnimator();
+    }
+
+    private void UpdateAnimator()
+    {
+        Vector3 velocity=GetComponent<NavMeshAgent>().velocity;
+        Vector3 localvelocity = transform.InverseTransformDirection(velocity);
+        float speed = localvelocity.z;
+        GetComponent<Animator>().SetFloat("forwardSpeed", speed);
     }
 
     private void MoveToCursor()
