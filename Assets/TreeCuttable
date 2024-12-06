@@ -1,0 +1,29 @@
+using UnityEngine;
+
+public class TreeCuttable : MonoBehaviour
+{
+    [SerializeField] private int woodAmount = 3;
+    [SerializeField] private float timeToChop = 2f;
+    [SerializeField] private GameObject woodPrefab;
+    
+    public float GetTimeToChop()
+    {
+        return timeToChop;
+    }
+    
+    public void ChopTree()
+    {
+        // Ağaç kesme animasyonu veya efekti eklenebilir
+        DropWood();
+        Destroy(gameObject);
+    }
+    
+    private void DropWood()
+    {
+        for (int i = 0; i < woodAmount; i++)
+        {
+            Vector3 dropPosition = transform.position + Random.insideUnitSphere;
+            Instantiate(woodPrefab, dropPosition, Quaternion.identity);
+        }
+    }
+}
