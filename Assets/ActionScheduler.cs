@@ -13,4 +13,9 @@ public class ActionScheduler : MonoBehaviour
 
         currentAction = action;
     }
+
+    public void CancelCurrentAction()
+    {
+        StartAction(null);
+    }
 }

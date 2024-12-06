@@ -14,9 +14,12 @@ public class Mover : MonoBehaviour
         UpdateAnimator();
     }
 
-    public void MoveTo(Vector3 hit)
+    public void MoveTo(Vector3 destination)
     {
-        GetComponent<NavMeshAgent>().destination = hit;
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        agent.isStopped = false;
+        agent.ResetPath();
+        agent.destination = destination;
     }
 
     private void UpdateAnimator()
@@ -45,6 +48,9 @@ public class Mover : MonoBehaviour
 
     public void Cancel()
     {
-        GetComponent<NavMeshAgent>().isStopped=true;
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        agent.isStopped = true;
+        agent.ResetPath();
+        GetComponent<Animator>().SetFloat("forwardSpeed", 0);
     }
 }

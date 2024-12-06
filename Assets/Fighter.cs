@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Fighter : MonoBehaviour, IAction
 {
@@ -12,9 +13,13 @@ public class Fighter : MonoBehaviour, IAction
     Transform targetObject;
     TreeCuttable currentTree;
     float timeSinceLastAttack = 0;
+    Animator animator;
+    NavMeshAgent navMeshAgent;
 
     private void Start()
     {
+        animator = GetComponent<Animator>();
+        navMeshAgent = GetComponent<NavMeshAgent>();
         weaponRange = 2.0f;
         timeBetweenAttacks = 1f;
         weaponDamage = 10f;
@@ -38,47 +43,25 @@ public class Fighter : MonoBehaviour, IAction
         
         if (currentTree != null)
         {
-            if (!currentTree.CanBeChopped())
-            {
-                Debug.Log($"Tree {currentTree.gameObject.name} cannot be chopped right now");
-                Cancel();
-                return;
-            }
-
-            bool isInRange = Vector3.Distance(transform.position, currentTree.transform.position) < woodcuttingRange;
-            if (!isInRange)
-            {
-                Debug.Log("Moving to tree...");
-                GetComponent<Mover>().MoveTo(currentTree.transform.position);
-            }
-            else
-            {
-                GetComponent<Mover>().Cancel();
-                if (timeSinceLastAttack >= timeBetweenAttacks)
-                {
-                    Debug.Log("Triggering chop animation");
-                    GetComponent<Animator>().ResetTrigger("attack");
-                    GetComponent<Animator>().SetTrigger("chop");
-                    timeSinceLastAttack = 0;
-                }
-            }
+            HandleTreeCutting();
             return;
         }
 
-        if (targetObject != null && targetObject.gameObject == null)
+        // Check if target is destroyed
+        if (targetObject == null || targetObject.gameObject == null)
         {
-            Debug.Log("Target was destroyed, canceling attack");
-            Cancel();
+            Debug.Log("Target is null or destroyed, canceling attack");
+            StopAttackBehavior();
+            GetComponent<ActionScheduler>().CancelCurrentAction();
             return;
         }
-
-        if (targetObject == null) return;
 
         Health targetHealth = targetObject.GetComponent<Health>();
         if (targetHealth == null || targetHealth.IsDead())
         {
             Debug.Log("Target is dead or has no health component, canceling attack");
-            Cancel();
+            StopAttackBehavior();
+            GetComponent<ActionScheduler>().CancelCurrentAction();
             return;
         }
 
@@ -92,11 +75,35 @@ public class Fighter : MonoBehaviour, IAction
             GetComponent<Mover>().Cancel();
             if (timeSinceLastAttack >= timeBetweenAttacks)
             {
-                GetComponent<Animator>().ResetTrigger("chop");
-                GetComponent<Animator>().SetTrigger("attack");
-                timeSinceLastAttack = 0;
+                TriggerAttack();
             }
         }
+    }
+
+    private void TriggerAttack()
+    {
+        animator.ResetTrigger("stopAttack");
+        animator.ResetTrigger("chop");
+        animator.SetTrigger("attack");
+        timeSinceLastAttack = 0;
+    }
+
+    private void StopAttackBehavior()
+    {
+        StopAttackAnimation();
+        navMeshAgent.isStopped = true;
+        navMeshAgent.ResetPath();
+        GetComponent<Mover>().Cancel();
+        Cancel();
+        targetObject = null;
+    }
+
+    private void StopAttackAnimation()
+    {
+        animator.SetTrigger("stopAttack");
+        animator.ResetTrigger("attack");
+        animator.ResetTrigger("chop");
+        GetComponent<Animator>().SetFloat("forwardSpeed", 0);
     }
 
     void Hit()
@@ -131,7 +138,29 @@ public class Fighter : MonoBehaviour, IAction
 
     public void Cancel()
     {
+        StopAttackAnimation();
+        navMeshAgent.isStopped = true;
+        navMeshAgent.ResetPath();
         targetObject = null;
         currentTree = null;
+    }
+
+    private void HandleTreeCutting()
+    {
+        bool isInRange = Vector3.Distance(transform.position, currentTree.transform.position) < woodcuttingRange;
+        if (!isInRange)
+        {
+            GetComponent<Mover>().MoveTo(currentTree.transform.position);
+        }
+        else
+        {
+            GetComponent<Mover>().Cancel();
+            if (timeSinceLastAttack >= timeBetweenAttacks)
+            {
+                GetComponent<Animator>().ResetTrigger("attack");
+                GetComponent<Animator>().SetTrigger("chop");
+                timeSinceLastAttack = 0;
+            }
+        }
     }
 }
