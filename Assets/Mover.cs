@@ -10,11 +10,13 @@ public class Mover : MonoBehaviour
     Ray ray;
     void Update()
     {
-        if (Input.GetMouseButtonDown(1))
-        {
-            MoveToCursor();
-        }
+        
         UpdateAnimator();
+    }
+
+    public void MoveTo(Vector3 hit)
+    {
+        GetComponent<NavMeshAgent>().destination = hit;
     }
 
     private void UpdateAnimator()
@@ -25,7 +27,7 @@ public class Mover : MonoBehaviour
         GetComponent<Animator>().SetFloat("forwardSpeed", speed);
     }
 
-    private void MoveToCursor()
+   /* private void MoveToCursor()
     {
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -37,5 +39,12 @@ public class Mover : MonoBehaviour
         {
             GetComponent<NavMeshAgent>().destination = hit.point;
         }
+    }
+   */
+
+
+    public void Cancel()
+    {
+        GetComponent<NavMeshAgent>().isStopped=true;
     }
 }
