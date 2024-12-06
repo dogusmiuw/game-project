@@ -1,14 +1,20 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    // Update is called once per frame
+    PhotonView pw;
+    private void Start()
+    {
+        pw = GetComponent<PhotonView>();
+    }
+
     void Update()
     {
-        Debug.Log("Checking for interactions...");
-        
+        if (!pw.IsMine) return;
+
         if (InteractWithTree() == true)
         {
             Debug.Log("Tree interaction detected");
@@ -35,9 +41,9 @@ public class PlayerController : MonoBehaviour
                 continue;
             }
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(1))
             {
-                GetComponent<Fighter>().Attack(target);
+                //GetComponent<Fighter>().Attack(target);
             }
             return true;
         }
@@ -45,11 +51,12 @@ public class PlayerController : MonoBehaviour
     }
     private bool InteractWithMovement()
     {
+
         RaycastHit hit;
         bool hasHit = Physics.Raycast(GetMouseRay(), out hit);
         if (hasHit)
         {
-            if(Input.GetMouseButton(0))
+            if(Input.GetMouseButton(1))
             {
                 GetComponent<Mover>().MoveTo(hit.point);
                 Debug.Log("Move");
@@ -84,7 +91,7 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 Debug.Log("Space pressed, starting to chop");
-                GetComponent<Fighter>().StartChopping(tree);
+                //GetComponent<Fighter>().StartChopping(tree);
             }
             return true;
         }
