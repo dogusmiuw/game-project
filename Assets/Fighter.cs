@@ -65,7 +65,22 @@ public class Fighter : MonoBehaviour, IAction
             return;
         }
 
+        if (targetObject != null && targetObject.gameObject == null)
+        {
+            Debug.Log("Target was destroyed, canceling attack");
+            Cancel();
+            return;
+        }
+
         if (targetObject == null) return;
+
+        Health targetHealth = targetObject.GetComponent<Health>();
+        if (targetHealth == null || targetHealth.IsDead())
+        {
+            Debug.Log("Target is dead or has no health component, canceling attack");
+            Cancel();
+            return;
+        }
 
         bool isInCombatRange = Vector3.Distance(transform.position, targetObject.position) < weaponRange;
         if (!isInCombatRange)
