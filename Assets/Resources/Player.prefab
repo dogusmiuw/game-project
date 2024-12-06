@@ -13,13 +13,13 @@ GameObject:
   - component: {fileID: 4438180311173189613}
   - component: {fileID: 2199738187131669911}
   - component: {fileID: 8927590161582452805}
-  - component: {fileID: 4581558929646461186}
   - component: {fileID: 6156623696190016658}
   - component: {fileID: 8293622816948511186}
   - component: {fileID: -258067293865020655}
   - component: {fileID: -8722334659042726963}
   - component: {fileID: 7274130027310504034}
   - component: {fileID: -6878375895296293134}
+  - component: {fileID: 6606630408543402238}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -140,22 +140,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &4581558929646461186
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4282467417751584011}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5839b281ec52ec04a8a601de9e27bc5e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  timeBetweenAttacks: 1
-  weaponDamage: 10
-  weaponRange: 0
-  woodcuttingRange: 2
 --- !u!114 &6156623696190016658
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -201,6 +185,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 7274130027310504034}
   - {fileID: -6878375895296293134}
+  - {fileID: 6606630408543402238}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -263,6 +248,33 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!114 &6606630408543402238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4282467417751584011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 1
+    SynchronizeType: 2
+    Name: forwardSpeed
+  - Type: 9
+    SynchronizeType: 1
+    Name: attack
+  - Type: 9
+    SynchronizeType: 1
+    Name: chop
+  m_SynchronizeLayers:
+  - SynchronizeType: 2
+    LayerIndex: 0
 --- !u!1001 &5150337119730191141
 PrefabInstance:
   m_ObjectHideFlags: 0
