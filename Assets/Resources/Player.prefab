@@ -305,7 +305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6655f0d5c4c8ae54885f05160d9bfdfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mobMaterial: {fileID: 2100000, guid: 831e4ea6beda02947bdca5aeb8543156, type: 2}
+  mobMaterial: {fileID: 2100000, guid: 409bf720e9924426b9f253cf037a8f4e, type: 2}
   selectedMobMaterial: {fileID: 2100000, guid: c14837dfa515883428e5652d93e80c72, type: 2}
 --- !u!54 &-8722334659042726963
 Rigidbody:
