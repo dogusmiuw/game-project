@@ -5,21 +5,24 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    Animator animator;
     PhotonView pw;
     private void Start()
     {
         pw = GetComponent<PhotonView>();
+        animator = GetComponent<Animator>();
+
     }
 
     void Update()
     {
         if (!pw.IsMine) return;
 
-        if (InteractWithTree() == true)
-        {
-            Debug.Log("Tree interaction detected");
-            return;
-        }
+      //  if (InteractWithTree() == true)
+        //{
+          //  Debug.Log("Tree interaction detected");
+            //return;
+       // }
         if (InteractWithCombat() == true)
         {
             return;
@@ -30,25 +33,29 @@ public class PlayerController : MonoBehaviour
         }
         Debug.Log("Nothing");
     }
+    // Example of refactoring the InteractWithCombat method:
     private bool InteractWithCombat()
     {
         RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
         foreach (RaycastHit hit in hits)
         {
             CombatTarget target = hit.transform.GetComponent<CombatTarget>();
-            if (target == null)
+            if (target != null)
             {
-                continue;
+                Debug.Log("Combat target found: " + hit.transform.name);
+                if (Input.GetMouseButton(0)) // Right-click to attack
+                {
+                    Debug.Log("Attack triggered");
+                    // Send the RPC to all clients to trigger the attack animation
+                    TriggerAttackAnimation(target.gameObject);
+                    return true;  // Return true to indicate combat interaction is complete
+                }
             }
-
-            if (Input.GetMouseButtonDown(1))
-            {
-                //GetComponent<Fighter>().Attack(target);
-            }
-            return true;
         }
-        return false;
+        return false;  // No combat target found
     }
+
+
     private bool InteractWithMovement()
     {
 
@@ -71,31 +78,76 @@ public class PlayerController : MonoBehaviour
         return Camera.main.ScreenPointToRay(Input.mousePosition);
     }
 
-    private bool InteractWithTree()
-    {
-        Debug.Log("Checking for tree interactions...");
-        RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
-        Debug.Log($"Found {hits.Length} objects in raycast");
-        
-        foreach (RaycastHit hit in hits)
-        {
-            Debug.Log($"Checking object: {hit.transform.name}");
-            TreeCuttable tree = hit.transform.GetComponent<TreeCuttable>();
-            if (tree == null)
-            {
-                Debug.Log($"No TreeCuttable component on {hit.transform.name}");
-                continue;
-            }
+    /* private bool InteractWithTree()
+     {
+         Debug.Log("Checking for tree interactions...");
+         RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
+         Debug.Log($"Found {hits.Length} objects in raycast");
 
-            Debug.Log($"Found tree: {hit.transform.name}");
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Debug.Log("Space pressed, starting to chop");
-                //GetComponent<Fighter>().StartChopping(tree);
-            }
-            return true;
+         foreach (RaycastHit hit in hits)
+         {
+             Debug.Log($"Checking object: {hit.transform.name}");
+             TreeCuttable tree = hit.transform.GetComponent<TreeCuttable>();
+             if (tree == null)
+             {
+                 Debug.Log($"No TreeCuttable component on {hit.transform.name}");
+                 continue;
+             }
+
+             Debug.Log($"Found tree: {hit.transform.name}");
+             if (Input.GetKeyDown(KeyCode.Space))
+             {
+                 Debug.Log("Space pressed, starting to chop");
+                 //GetComponent<Fighter>().StartChopping(tree);
+             }
+             return true;
+         }
+         Debug.Log("No trees found in raycast");
+         return false;
+     }
+    */
+    [PunRPC]
+    private void TriggerAttackAnimation(GameObject target)
+    {
+        Debug.Log("Attack animation triggered");
+
+        if (animator != null)
+        {
+            Debug.Log("Setting attack to true");
+            animator.SetBool("attack", true); // Set attack animation to true
         }
-        Debug.Log("No trees found in raycast");
-        return false;
+        else
+        {
+            Debug.LogWarning("Animator is null!");
+        }
+
+        // Apply damage to the target
+        if (target != null)
+        {
+            Health health = target.GetComponent<Health>();
+            if (health != null)
+            {
+                Debug.Log("Applying damage to the target");
+                target.GetComponent<PhotonView>().RPC("ApplyDamage", RpcTarget.All, 10f);  // Apply damage across all clients
+            }
+            else
+            {
+                Debug.LogWarning("Target does not have Health component");
+            }
+        }
     }
+
+    private IEnumerator ResetAttackParameter()
+    {
+        // Wait for a short duration to simulate the attack animation
+        yield return new WaitForSeconds(0.5f);  // Adjust this time based on your animation length
+
+        if (animator != null)
+        {
+            Debug.Log("Resetting attack to false");
+            animator.SetBool("attack", false);  // Reset the attack boolean to false
+        }
+    }
+
+
 }
