@@ -42,14 +42,32 @@ public class Spawner : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.CountOfPlayers > 0)
         {
-            PhotonNetwork.Instantiate("Player", player2BaseLocation, Quaternion.identity);
+            GameObject mob = PhotonNetwork.Instantiate("Player", player2BaseLocation, Quaternion.identity);
+            Transform topsTransform = null;
+            foreach (Transform child in mob.GetComponentsInChildren<Transform>())
+            {
+                if (child.name == "Tops")
+                {
+                    topsTransform = child;
+                    break;
+                }
+            }
+
+            if (topsTransform != null)
+            {
+                SkinnedMeshRenderer playerShirt = topsTransform.GetComponent<SkinnedMeshRenderer>();
+                if (playerShirt != null)
+                {
+                    playerShirt.material = mobMaterial;
+                }
+            }
         }
         else
         {
             PhotonNetwork.Instantiate("Player", player1BaseLocation, Quaternion.identity);
         }
-        SkinnedMeshRenderer playerShirt = GameObject.Find("Tops").GetComponent<SkinnedMeshRenderer>();
-        playerShirt.material = mobMaterial;
+        // SkinnedMeshRenderer playerShirt = GameObject.Find("Tops").GetComponent<SkinnedMeshRenderer>();
+        // playerShirt.material = mobMaterial;
     }
 
     void Update()
