@@ -310,9 +310,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1638104860}
-        m_TargetAssemblyTypeName: Inventory, Assembly-CSharp
-        m_MethodName: GetFood
+      - m_Target: {fileID: 1477994406}
+        m_TargetAssemblyTypeName: Spawner, Assembly-CSharp
+        m_MethodName: SpawnMob
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1770,8 +1770,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16f79e41df3eea14786ebb7807563b90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player1Material: {fileID: 2100000, guid: c14837dfa515883428e5652d93e80c72, type: 2}
-  player2Material: {fileID: 2100000, guid: 831e4ea6beda02947bdca5aeb8543156, type: 2}
+  mobMaterial: {fileID: 2100000, guid: 409bf720e9924426b9f253cf037a8f4e, type: 2}
+  player1BaseLocation: {x: 24.91796, y: 0, z: 10.7367}
+  player2BaseLocation: {x: -26.02451, y: 0, z: 7.101749}
 --- !u!1 &1638104858
 GameObject:
   m_ObjectHideFlags: 0
