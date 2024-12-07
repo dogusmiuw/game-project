@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour
             if (detectedTree != null && Input.GetKeyDown(KeyCode.Space))
             {
                 Debug.Log("Space pressed, cutting tree");
+                TriggerChoppingAnimation();
                 detectedTree.StartChopping();
                 detectedTree = null; // Reset after chopping
             }
@@ -46,6 +47,33 @@ public class PlayerController : MonoBehaviour
 
         Debug.Log("Nothing");
     }
+
+
+    private void TriggerChoppingAnimation()
+    {
+        if (animator != null)
+        {
+            Debug.Log("Triggering chopping animation");
+            animator.SetBool("chop", true);  
+            StartCoroutine(ResetChoppingAnimation());
+        }
+        else
+        {
+            Debug.LogWarning("Animator is null!");
+        }
+    }
+
+    // Reset the chopping animation after a delay
+    private IEnumerator ResetChoppingAnimation()
+    {
+        yield return new WaitForSeconds(1f);  // Adjust time based on animation length
+        if (animator != null)
+        {
+            Debug.Log("Resetting chopping animation");
+            animator.SetBool("chop", false);
+        }
+    }
+
 
     // Example of refactoring the InteractWithCombat method:
     private bool InteractWithCombat()
