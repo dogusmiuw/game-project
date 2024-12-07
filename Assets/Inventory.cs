@@ -1,20 +1,66 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
+using UnityEngine.UI;
+using TMPro;
 
 public class Inventory : MonoBehaviour
 {
-    private Dictionary<string, int> items = new Dictionary<string, int>();
-    
-    public void AddItem(string itemName, int amount = 1)
+    public ArrayList items = new ArrayList();
+
+    [SerializeField]
+    TMP_Text woodCountText;
+    [SerializeField]
+    TMP_Text foodCountText;
+
+    private void AddItem(Item newItem)
     {
-        if (items.ContainsKey(itemName))
+        Item foundItem = FindItem(newItem.Name);
+
+        if (foundItem == null)
         {
-            items[itemName] += amount;
+            items.Add(newItem);
+            return;
         }
-        else
-        {
-            items[itemName] = amount;
-        }
-        Debug.Log($"Added {itemName}. New total: {items[itemName]}");
+
+        foundItem.Amount += newItem.Amount;
     }
-} 
+
+    public void GetWood()
+    {
+        AddItem(new Item("Wood", 5));
+        woodCountText.text = $"Wood: {FindItem("Wood").Amount}";
+    }
+
+    public void GetFood()
+    {
+        AddItem(new Item("Food", 3));
+        foodCountText.text = $"Food: {FindItem("Food").Amount}";
+    }
+
+    private Item FindItem(string key)
+    {
+        foreach (Item item in items)
+        {
+            if (item.Name == key)
+            {
+                return item;
+            }
+        }
+        return null;
+    }
+}
+
+public class Item
+{
+    public string Name { get; set; }
+    public int Amount { get; set; }
+    public Sprite Icon { get; set; }
+
+    public Item(string Name, int Amount = 0, Sprite Icon = null)
+    {
+        this.Name = Name;
+        this.Amount = Amount;
+        this.Icon = Icon;
+    }
+}
