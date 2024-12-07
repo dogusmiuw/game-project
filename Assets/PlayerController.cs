@@ -43,7 +43,7 @@ public class PlayerController : MonoBehaviour
             if (target != null)
             {
                 Debug.Log("Combat target found: " + hit.transform.name);
-                if (Input.GetMouseButton(0)) // Right-click to attack
+                if (Input.GetMouseButtonDown(0)) // Right-click to attack
                 {
                     Debug.Log("Attack triggered");
                     // Send the RPC to all clients to trigger the attack animation
