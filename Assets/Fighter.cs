@@ -1,166 +1,105 @@
-//using System.Collections;
-//using System.Collections.Generic;
-//using UnityEngine;
-//using UnityEngine.AI;
+using Photon.Pun;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-//public class Fighter : MonoBehaviour, IAction
-//{
-//    [SerializeField] float timeBetweenAttacks = 1f;
-//    [SerializeField] float weaponDamage = 10f;
-//    [SerializeField] float weaponRange = 2f;
-//    [SerializeField] float woodcuttingRange = 2f;
+public class Fighter : MonoBehaviour, IAction
+{
+    [SerializeField] float timeBetweenAttacks = 1f;
+    [SerializeField] float weaponRange = 2.0f;
+    [SerializeField] float weaponDamage = 10f;
 
-//    Transform targetObject;
-//    TreeCuttable currentTree;
-//    float timeSinceLastAttack = 0;
-//    Animator animator;
-//    NavMeshAgent navMeshAgent;
+    Transform targetObject;
+    float timeSinceLastAttack;
+    private void Start()
+    {
+        weaponRange = 2.0f;
+        weaponDamage = 10f;
+        timeBetweenAttacks = 1f;
+    }
+  private void Update()
+{
+    timeSinceLastAttack += Time.deltaTime;
 
-//    private void Start()
-//    {
-//        animator = GetComponent<Animator>();
-//        navMeshAgent = GetComponent<NavMeshAgent>();
-//        weaponRange = 2.0f;
-//        timeBetweenAttacks = 1f;
-//        weaponDamage = 10f;
-//    }
+    if (targetObject == null)
+    {
+        GetComponent<Animator>().SetBool("attack", false); // Stop attacking
+        return;
+    }
 
-//    public void StartChopping(TreeCuttable tree)
-//    {
-//        if (tree == null)
-//        {
-//            Debug.LogWarning("Attempted to start chopping with null tree!");
-//            return;
-//        }
-//        Debug.Log($"Starting to chop tree {tree.gameObject.name}");
-//        GetComponent<ActionScheduler>().StartAction(this);
-//        currentTree = tree;
-//    }
+    bool isInRange = Vector3.Distance(transform.position, targetObject.position) < weaponRange;
 
-//    private void Update()
-//    {
-//        timeSinceLastAttack += Time.deltaTime;
+    if (!isInRange)
+    {
+        GetComponent<Mover>().MoveTo(targetObject.position);
+    }
+    else
+    {
+        AttackMethod();
+        GetComponent<Mover>().Cancel();
+    }
+}
 
-//        if (currentTree != null)
-//        {
-//            HandleTreeCutting();
-//            return;
-//        }
+    /*  void Hit()
+   {
+       if (targetObject == null) return; // Ensure the target still exists
 
-//        // Check if target is destroyed
-//        if (targetObject == null || targetObject.gameObject == null)
-//        {
-//            Debug.Log("Target is null or destroyed, canceling attack");
-//            StopAttackBehavior();
-//            GetComponent<ActionScheduler>().CancelCurrentAction();
-//            return;
-//        }
+       Health health = targetObject.GetComponent<Health>();
+       if (health != null)
+       {
+           health.TakeDamage(weaponDamage);
+       }
+   }
+    */
+    void Hit()
+    {
+        if (targetObject == null) return;
 
-//        Health targetHealth = targetObject.GetComponent<Health>();
-//        if (targetHealth == null || targetHealth.IsDead())
-//        {
-//            Debug.Log("Target is dead or has no health component, canceling attack");
-//            StopAttackBehavior();
-//            GetComponent<ActionScheduler>().CancelCurrentAction();
-//            return;
-//        }
+        PhotonView targetPhotonView = targetObject.GetComponent<PhotonView>();
+        if (targetPhotonView != null && targetPhotonView.IsMine == false)
+        {
+            targetPhotonView.RPC("ApplyDamage", RpcTarget.All, weaponDamage);
+        }
+    }
 
-//        bool isInCombatRange = Vector3.Distance(transform.position, targetObject.position) < weaponRange;
-//        if (!isInCombatRange)
-//        {
-//            GetComponent<Mover>().MoveTo(targetObject.position);
-//        }
-//        else
-//        {
-//            GetComponent<Mover>().Cancel();
-//            if (timeSinceLastAttack >= timeBetweenAttacks)
-//            {
-//                TriggerAttack();
-//            }
-//        }
-//    }
 
-//    private void TriggerAttack()
-//    {
-//        animator.ResetTrigger("stopAttack");
-//        animator.ResetTrigger("chop");
-//        animator.SetTrigger("attack");
-//        timeSinceLastAttack = 0;
-//    }
+    private void AttackMethod()
+    {
+        if (timeSinceLastAttack > timeBetweenAttacks)
+        {
+            
+            GetComponent<Animator>().SetBool("attack",true);
+            timeSinceLastAttack = 0;
+        }
+    }
 
-//    private void StopAttackBehavior()
-//    {
-//        StopAttackAnimation();
-//        navMeshAgent.isStopped = true;
-//        navMeshAgent.ResetPath();
-//        GetComponent<Mover>().Cancel();
-//        Cancel();
-//        targetObject = null;
-//    }
 
-//    private void StopAttackAnimation()
-//    {
-//        animator.SetTrigger("stopAttack");
-//        animator.ResetTrigger("attack");
-//        animator.ResetTrigger("chop");
-//        GetComponent<Animator>().SetFloat("forwardSpeed", 0);
-//    }
 
-//    void Hit()
-//    {
-//        if (targetObject == null) return;
+    /*  public void Attack(CombatTarget target)
+      {
+          GetComponent<ActionScheduler>().StartAction(this);
+          targetObject = target.transform;
+          //Debug.Log("Attack is done");
+      }
+    */
 
-//        Health health = targetObject.GetComponent<Health>();
-//        if (health != null)
-//        {
-//            health.TakeDamage(weaponDamage);
-//        }
-//    }
+    public void Attack(CombatTarget target)
+    {
+        Debug.Log("Attacking target: " + target.name);
+        PhotonView targetPhotonView = target.GetComponent<PhotonView>();
+        if (targetPhotonView != null && !targetPhotonView.IsMine)
+        {
+            Debug.Log("Sending damage RPC to: " + target.name);
+            targetPhotonView.RPC("ApplyDamage", RpcTarget.All, weaponDamage);
+        }
+    }
 
-//    void ChopHit()
-//    {
-//        if (currentTree == null)
-//        {
-//            Debug.LogWarning("ChopHit called but no tree is targeted!");
-//            return;
-//        }
-//        Debug.Log($"ChopHit executed on tree {currentTree.gameObject.name}");
-//        currentTree.ChopTree();
-//        GetComponent<Inventory>().AddItem("Wood");
-//        currentTree = null;
-//    }
+    public void Cancel()
+{
+    targetObject = null; // Ensure no target
+    Animator animator = GetComponent<Animator>();
+   animator.SetBool("attack", false);
+  //  animator.SetTrigger("stopAttack");
+}
 
-//    public void Attack(CombatTarget target)
-//    {
-//        GetComponent<ActionScheduler>().StartAction(this);
-//        targetObject = target.transform;
-//    }
-
-//    public void Cancel()
-//    {
-//        StopAttackAnimation();
-//        navMeshAgent.isStopped = true;
-//        navMeshAgent.ResetPath();
-//        targetObject = null;
-//        currentTree = null;
-//    }
-
-//    private void HandleTreeCutting()
-//    {
-//        bool isInRange = Vector3.Distance(transform.position, currentTree.transform.position) < woodcuttingRange;
-//        if (!isInRange)
-//        {
-//            GetComponent<Mover>().MoveTo(currentTree.transform.position);
-//        }
-//        else
-//        {
-//            GetComponent<Mover>().Cancel();
-//            if (timeSinceLastAttack >= timeBetweenAttacks)
-//            {
-//                GetComponent<Animator>().ResetTrigger("attack");
-//                GetComponent<Animator>().SetTrigger("chop");
-//                timeSinceLastAttack = 0;
-//            }
-//        }
-//    }
-//}
+}
