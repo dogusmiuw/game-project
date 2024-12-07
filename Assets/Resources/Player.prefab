@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 6606630408543402238}
   - component: {fileID: -2780717124780642050}
   - component: {fileID: 7006681539869744601}
+  - component: {fileID: 2871851144545894275}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -318,6 +319,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671576f4044ea414696755290643207c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2871851144545894275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4282467417751584011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35fbe8ae9db657141a878328f9ade650, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  woodCountText: {fileID: 0}
+  foodCountText: {fileID: 0}
 --- !u!1001 &5150337119730191141
 PrefabInstance:
   m_ObjectHideFlags: 0

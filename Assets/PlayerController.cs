@@ -5,10 +5,15 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    private TreeCuttable detectedTree = null;
+
+
+    Inventory inventory;
     Animator animator;
     PhotonView pw;
     private void Start()
     {
+        inventory = GetComponent<Inventory>();
         pw = GetComponent<PhotonView>();
         animator = GetComponent<Animator>();
 
@@ -18,11 +23,17 @@ public class PlayerController : MonoBehaviour
     {
         if (!pw.IsMine) return;
 
-      //  if (InteractWithTree() == true)
-        //{
-          //  Debug.Log("Tree interaction detected");
-            //return;
-       // }
+        if (InteractWithTree())
+        {
+            if (detectedTree != null && Input.GetKeyDown(KeyCode.Space))
+            {
+                Debug.Log("Space pressed, cutting tree");
+                detectedTree.StartChopping();
+                inventory.GetWood();
+                detectedTree = null; // Reset after chopping
+            }
+            return;
+        }
         if (InteractWithCombat() == true)
         {
             return;
@@ -78,34 +89,27 @@ public class PlayerController : MonoBehaviour
         return Camera.main.ScreenPointToRay(Input.mousePosition);
     }
 
-    /* private bool InteractWithTree()
-     {
-         Debug.Log("Checking for tree interactions...");
-         RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
-         Debug.Log($"Found {hits.Length} objects in raycast");
+    private bool InteractWithTree()
+    {
+        
+        Ray ray = GetMouseRay();
+        RaycastHit[] hits = Physics.RaycastAll(ray, 100f);
+        foreach (RaycastHit hit in hits)
+        {
+            TreeCuttable tree = hit.transform.GetComponent<TreeCuttable>();
+            if (tree != null)
+            {
+                Debug.Log($"Found tree: {hit.transform.name}");
+                detectedTree = tree; // Store the detected tree
+                return true;
+            }
+        }
 
-         foreach (RaycastHit hit in hits)
-         {
-             Debug.Log($"Checking object: {hit.transform.name}");
-             TreeCuttable tree = hit.transform.GetComponent<TreeCuttable>();
-             if (tree == null)
-             {
-                 Debug.Log($"No TreeCuttable component on {hit.transform.name}");
-                 continue;
-             }
+        detectedTree = null; // Reset if no tree is found
+        return false;
+    }
 
-             Debug.Log($"Found tree: {hit.transform.name}");
-             if (Input.GetKeyDown(KeyCode.Space))
-             {
-                 Debug.Log("Space pressed, starting to chop");
-                 //GetComponent<Fighter>().StartChopping(tree);
-             }
-             return true;
-         }
-         Debug.Log("No trees found in raycast");
-         return false;
-     }
-    */
+
     [PunRPC]
     private void TriggerAttackAnimation(GameObject target)
     {
