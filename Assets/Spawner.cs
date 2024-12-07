@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.UI;
 
 public class Spawner : MonoBehaviourPunCallbacks
 {
@@ -12,7 +13,6 @@ public class Spawner : MonoBehaviourPunCallbacks
     Vector3 player1BaseLocation;
     [SerializeField]
     Vector3 player2BaseLocation;
-
 
     void Start()
     {
