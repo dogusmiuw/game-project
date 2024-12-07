@@ -6,6 +6,9 @@ using Photon.Realtime;
 
 public class Spawner : MonoBehaviourPunCallbacks
 {
+    public Material player1Material;
+    public Material player2Material;
+
     void Start()
     {
         if (!PhotonNetwork.IsConnected)
@@ -27,18 +30,25 @@ public class Spawner : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        if (PhotonNetwork.CountOfPlayers == 1)
+        if (PhotonNetwork.CountOfPlayers > 0)
         {
+            // TODO: change with player 2 base location later
             PhotonNetwork.Instantiate("Player", new Vector3(24.91796f, 0f, 10.7367f), Quaternion.identity);
-        } else
+            SkinnedMeshRenderer playerShirt = GameObject.Find("Tops").GetComponent<SkinnedMeshRenderer>();
+            playerShirt.material = player2Material;
+        }
+        else
         {
+            // TODO: change with player 1 base location later
             PhotonNetwork.Instantiate("Player", new Vector3(-26.02451f, 0f, 7.101749f), Quaternion.identity);
+            SkinnedMeshRenderer playerShirt = GameObject.Find("Tops").GetComponent<SkinnedMeshRenderer>();
+            playerShirt.material = player1Material;
         }
     }
 
     void Update()
     {
-        
+
     }
 
     public override void OnLeftRoom()
