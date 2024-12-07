@@ -5,10 +5,15 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    private TreeCuttable detectedTree = null;
+
+
+    //Inventory inventory;
     Animator animator;
     PhotonView pw;
     private void Start()
     {
+        //inventory = GetComponent<Inventory>();
         pw = GetComponent<PhotonView>();
         animator = GetComponent<Animator>();
 
@@ -18,21 +23,30 @@ public class PlayerController : MonoBehaviour
     {
         if (!pw.IsMine) return;
 
-      //  if (InteractWithTree() == true)
-        //{
-          //  Debug.Log("Tree interaction detected");
-            //return;
-       // }
-        if (InteractWithCombat() == true)
+        if (InteractWithTree())
+        {
+            if (detectedTree != null && Input.GetKeyDown(KeyCode.Space))
+            {
+                Debug.Log("Space pressed, cutting tree");
+                detectedTree.StartChopping();
+                detectedTree = null; // Reset after chopping
+            }
+            return;
+        }
+
+        if (InteractWithCombat())
         {
             return;
         }
-        if (InteractWithMovement() == true)
+
+        if (InteractWithMovement())
         {
             return;
         }
+
         Debug.Log("Nothing");
     }
+
     // Example of refactoring the InteractWithCombat method:
     private bool InteractWithCombat()
     {
@@ -43,7 +57,7 @@ public class PlayerController : MonoBehaviour
             if (target != null)
             {
                 Debug.Log("Combat target found: " + hit.transform.name);
-                if (Input.GetMouseButtonDown(0)) // Right-click to attack
+                if (Input.GetMouseButton(0)) // Right-click to attack
                 {
                     Debug.Log("Attack triggered");
                     // Send the RPC to all clients to trigger the attack animation
@@ -63,13 +77,13 @@ public class PlayerController : MonoBehaviour
         bool hasHit = Physics.Raycast(GetMouseRay(), out hit);
         if (hasHit)
         {
-            if(Input.GetMouseButton(1))
+            if (Input.GetMouseButton(1))
             {
                 GetComponent<Mover>().MoveTo(hit.point);
                 Debug.Log("Move");
             }
             return true;
-            
+
         }
         return false;
     }
@@ -78,34 +92,30 @@ public class PlayerController : MonoBehaviour
         return Camera.main.ScreenPointToRay(Input.mousePosition);
     }
 
-    /* private bool InteractWithTree()
-     {
-         Debug.Log("Checking for tree interactions...");
-         RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
-         Debug.Log($"Found {hits.Length} objects in raycast");
+    private bool InteractWithTree()
+    {
+        Ray ray = GetMouseRay();
+        int treeLayerMask = LayerMask.GetMask("Tree");  // Ensure "Tree" is the exact name of your layer
+        RaycastHit[] hits = Physics.RaycastAll(ray, 100f, treeLayerMask);
 
-         foreach (RaycastHit hit in hits)
-         {
-             Debug.Log($"Checking object: {hit.transform.name}");
-             TreeCuttable tree = hit.transform.GetComponent<TreeCuttable>();
-             if (tree == null)
-             {
-                 Debug.Log($"No TreeCuttable component on {hit.transform.name}");
-                 continue;
-             }
+        foreach (RaycastHit hit in hits)
+        {
+            TreeCuttable tree = hit.transform.GetComponent<TreeCuttable>();
+            if (tree != null)
+            {
+                Debug.Log($"Found tree: {hit.transform.name}");
+                detectedTree = tree; // Store the detected tree
+                return true;
+            }
+        }
 
-             Debug.Log($"Found tree: {hit.transform.name}");
-             if (Input.GetKeyDown(KeyCode.Space))
-             {
-                 Debug.Log("Space pressed, starting to chop");
-                 //GetComponent<Fighter>().StartChopping(tree);
-             }
-             return true;
-         }
-         Debug.Log("No trees found in raycast");
-         return false;
-     }
-    */
+        detectedTree = null; // Reset if no tree is found
+        return false;
+    }
+
+
+
+
     [PunRPC]
     private void TriggerAttackAnimation(GameObject target)
     {
