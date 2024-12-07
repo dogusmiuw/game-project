@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.UI;
 
 public class Spawner : MonoBehaviourPunCallbacks
 {
-    public Material player1Material;
-    public Material player2Material;
+    [SerializeField]
+    Material mobMaterial;
+    [SerializeField]
+    Vector3 player1BaseLocation;
+    [SerializeField]
+    Vector3 player2BaseLocation;
 
     void Start()
     {
@@ -30,20 +35,21 @@ public class Spawner : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
+        SpawnMob();
+    }
+
+    public void SpawnMob()
+    {
         if (PhotonNetwork.CountOfPlayers > 0)
         {
-            // TODO: change with player 2 base location later
-            PhotonNetwork.Instantiate("Player", new Vector3(24.91796f, 0f, 10.7367f), Quaternion.identity);
-            SkinnedMeshRenderer playerShirt = GameObject.Find("Tops").GetComponent<SkinnedMeshRenderer>();
-            playerShirt.material = player2Material;
+            PhotonNetwork.Instantiate("Player", player2BaseLocation, Quaternion.identity);
         }
         else
         {
-            // TODO: change with player 1 base location later
-            PhotonNetwork.Instantiate("Player", new Vector3(-26.02451f, 0f, 7.101749f), Quaternion.identity);
-            SkinnedMeshRenderer playerShirt = GameObject.Find("Tops").GetComponent<SkinnedMeshRenderer>();
-            playerShirt.material = player1Material;
+            PhotonNetwork.Instantiate("Player", player1BaseLocation, Quaternion.identity);
         }
+        SkinnedMeshRenderer playerShirt = GameObject.Find("Tops").GetComponent<SkinnedMeshRenderer>();
+        playerShirt.material = mobMaterial;
     }
 
     void Update()
