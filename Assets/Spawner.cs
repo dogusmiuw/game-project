@@ -14,6 +14,9 @@ public class Spawner : MonoBehaviourPunCallbacks
     [SerializeField]
     Vector3 player2BaseLocation;
 
+    [SerializeField]
+    private int foodCostPerMob = 5; // Cost to spawn each mob
+
     void Start()
     {
         if (!PhotonNetwork.IsConnected)
@@ -21,6 +24,7 @@ public class Spawner : MonoBehaviourPunCallbacks
             PhotonNetwork.ConnectUsingSettings();
         }
     }
+
     public override void OnConnectedToMaster()
     {
         Debug.Log("Connected to Master Server");
@@ -35,14 +39,40 @@ public class Spawner : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        SpawnMob();
+        Debug.Log($"Joined Room: {PhotonNetwork.CurrentRoom.Name}");
+        Debug.Log($"Current Player Count: {PhotonNetwork.CurrentRoom.PlayerCount}");
+
+        // Spawn main player when joining room
+        SpawnMainPlayer();
     }
 
-    public void SpawnMob()
+    // Spawn the main player based on their Photon ActorNumber
+    public void SpawnMainPlayer()
     {
-        if (PhotonNetwork.CountOfPlayers > 0)
+        // Check if the current player is Player 1 or Player 2 based on ActorNumber
+        Vector3 spawnPosition = PhotonNetwork.LocalPlayer.ActorNumber == 1 ? player1BaseLocation : player2BaseLocation;
+        PhotonNetwork.Instantiate("Player", spawnPosition, Quaternion.identity);
+    }
+
+    // Method to spawn a clone mob when the button is clicked
+    public void OnSpawnMobButtonClicked()
+    {
+        Inventory inventory = Inventory.Instance; // Assuming you have an Inventory class
+        Item foodItem = inventory.FindItem("Food");
+
+        if (foodItem != null && foodItem.Amount >= foodCostPerMob)
         {
-            GameObject mob = PhotonNetwork.Instantiate("Player", player2BaseLocation, Quaternion.identity);
+            // Deduct food cost and spawn the mob
+            foodItem.Amount -= foodCostPerMob;
+            inventory.UpdateUI();
+
+            // Determine spawn location for the clone based on player ActorNumber
+            Vector3 spawnPosition = PhotonNetwork.LocalPlayer.ActorNumber == 1 ? player1BaseLocation : player2BaseLocation;
+
+            // Spawn the mob at the correct position for the player
+            GameObject mob = PhotonNetwork.Instantiate("Player", spawnPosition, Quaternion.identity);
+
+            // Customize mob appearance
             Transform topsTransform = null;
             foreach (Transform child in mob.GetComponentsInChildren<Transform>())
             {
@@ -64,17 +94,15 @@ public class Spawner : MonoBehaviourPunCallbacks
         }
         else
         {
-            PhotonNetwork.Instantiate("Player", player1BaseLocation, Quaternion.identity);
+            Debug.Log("Not enough food to spawn a new unit!");
         }
-        // SkinnedMeshRenderer playerShirt = GameObject.Find("Tops").GetComponent<SkinnedMeshRenderer>();
-        // playerShirt.material = mobMaterial;
     }
 
     void Update()
     {
-
     }
 
+    // Photon callback methods
     public override void OnLeftRoom()
     {
         Debug.Log("Left the Room");

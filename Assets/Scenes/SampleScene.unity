@@ -546,7 +546,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1477994406}
         m_TargetAssemblyTypeName: Spawner, Assembly-CSharp
-        m_MethodName: SpawnMob
+        m_MethodName: OnSpawnMobButtonClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -554,7 +554,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &269956445
 MonoBehaviour:
@@ -2518,7 +2518,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Wood: 0'
+  m_text: 'WOOD:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2780,6 +2780,7 @@ MonoBehaviour:
   mobMaterial: {fileID: 2100000, guid: 409bf720e9924426b9f253cf037a8f4e, type: 2}
   player1BaseLocation: {x: 24.91796, y: 0, z: 10.7367}
   player2BaseLocation: {x: -26.02451, y: 0, z: 7.101749}
+  foodCostPerMob: 5
 --- !u!1001 &1499941978
 PrefabInstance:
   m_ObjectHideFlags: 0
