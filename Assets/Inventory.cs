@@ -1,43 +1,65 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
-using UnityEngine.UI;
 using TMPro;
 
 public class Inventory : MonoBehaviour
 {
-    public ArrayList items = new ArrayList();
+    public static Inventory Instance;
 
-    [SerializeField]
-    TMP_Text woodCountText;
-    [SerializeField]
-    TMP_Text foodCountText;
+    // List to hold items in the inventory
+    public List<Item> items = new List<Item>();
 
+    // Current amount of wood and food
+    [SerializeField] TMP_Text woodCountText;
+    [SerializeField] TMP_Text foodCountText;
+
+    private void Awake()
+    {
+        // Ensure there is only one instance of Inventory
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject); // Destroy duplicate instances
+        }
+    }
+
+    // Method to add items to the inventory
     private void AddItem(Item newItem)
     {
+        // Check if the item already exists in the inventory
         Item foundItem = FindItem(newItem.Name);
 
         if (foundItem == null)
         {
+            // If item doesn't exist, add it to the inventory
             items.Add(newItem);
-            return;
+        }
+        else
+        {
+            // If item exists, just update the amount
+            foundItem.Amount += newItem.Amount;
         }
 
-        foundItem.Amount += newItem.Amount;
+        // Update UI after adding the item
+        UpdateUI();
     }
 
+    // Method to add wood to the inventory
     public void GetWood()
     {
-        AddItem(new Item("Wood", 5));
-        woodCountText.text = $"Wood: {FindItem("Wood").Amount}";
+        AddItem(new Item("Wood", 1));  // Add 1 wood to the inventory
     }
 
+    // Method to add food to the inventory
     public void GetFood()
     {
-        AddItem(new Item("Food", 3));
-        foodCountText.text = $"Food: {FindItem("Food").Amount}";
+        AddItem(new Item("Food", 3));  // Add 3 food to the inventory
     }
 
+    // Helper method to find an item by its name
     private Item FindItem(string key)
     {
         foreach (Item item in items)
@@ -48,6 +70,24 @@ public class Inventory : MonoBehaviour
             }
         }
         return null;
+    }
+
+    // Method to update the UI text for wood and food counts
+    private void UpdateUI()
+    {
+        // Update the wood count UI
+        Item woodItem = FindItem("Wood");
+        if (woodItem != null)
+        {
+            woodCountText.text = $"Wood: {woodItem.Amount}";
+        }
+
+        // Update the food count UI
+        Item foodItem = FindItem("Food");
+        if (foodItem != null)
+        {
+            foodCountText.text = $"Food: {foodItem.Amount}";
+        }
     }
 }
 
