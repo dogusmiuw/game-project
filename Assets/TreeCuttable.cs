@@ -3,7 +3,13 @@ using UnityEngine;
 public class TreeCuttable : MonoBehaviour
 {
     public int treeHealth = 3; // Number of hits before the tree is destroyed
+    //Inventory inventory;
 
+
+    private void Start()
+    {
+        //inventory = GetComponent<Inventory>();
+    }
     // Call this method when the player starts chopping
     public void StartChopping()
     {
@@ -25,5 +31,6 @@ public class TreeCuttable : MonoBehaviour
         // Optionally: Add logic to reward player with wood
         Debug.Log("Tree chopped down!");
         Destroy(gameObject); // Destroy the tree object
+        Inventory.Instance.GetWood();
     }
 }

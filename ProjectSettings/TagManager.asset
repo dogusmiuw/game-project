@@ -5,11 +5,12 @@ TagManager:
   serializedVersion: 2
   tags:
   - Mob
+  - Tree
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Tree
   - Water
   - UI
   - 

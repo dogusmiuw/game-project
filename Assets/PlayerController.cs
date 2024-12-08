@@ -81,18 +81,18 @@ public class PlayerController : MonoBehaviour
         RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
         foreach (RaycastHit hit in hits)
         {
-            CombatTarget target = hit.transform.GetComponent<CombatTarget>();
-            if (target != null)
-            {
-                Debug.Log("Combat target found: " + hit.transform.name);
-                if (Input.GetMouseButton(0)) // Right-click to attack
-                {
-                    Debug.Log("Attack triggered");
+          //  CombatTarget target = hit.transform.GetComponent<CombatTarget>();
+          //  if (target != null)
+            //{
+              //  Debug.Log("Combat target found: " + hit.transform.name);
+                //if (Input.GetMouseButton(0)) // Right-click to attack
+                //{
+                  //  Debug.Log("Attack triggered");
                     // Send the RPC to all clients to trigger the attack animation
-                    TriggerAttackAnimation(target.gameObject);
-                    return true;  // Return true to indicate combat interaction is complete
-                }
-            }
+                    //TriggerAttackAnimation(target.gameObject);
+                    //return true;  // Return true to indicate combat interaction is complete
+              //  }
+           // }
         }
         return false;  // No combat target found
     }
