@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Photon.Pun;
+using UnityEngine.UI;
 
 public class Base : MonoBehaviourPunCallbacks
 {
@@ -20,9 +21,14 @@ public class Base : MonoBehaviourPunCallbacks
         UpdateUI();
     }
 
-    void UpdateUI()
+   public void UpdateUI()
     {
         Debug.Log($"Wood amount: {(Inventory.Instance.FindItem("Wood")?.Amount ?? 0)}");
+        
+        if (levelText != null)
+        {
+            levelText.text = $"Level: {level}";
+        }
         
         if (upgradeButton != null)
         {
@@ -46,9 +52,22 @@ public class Base : MonoBehaviourPunCallbacks
             if (buttonComponent != null)
             {
                 buttonComponent.interactable = hasEnoughWood && canShowButton;
+                
+                ColorBlock colors = buttonComponent.colors;
+                colors.disabledColor = new Color(0.7f, 0.7f, 0.7f, 0.5f);
+                colors.normalColor = Color.white;
+                buttonComponent.colors = colors;
+                
                 Debug.Log($"Button interactable: {buttonComponent.interactable}");
             }
         }
+    }
+
+    [PunRPC]
+    void UpdateLevel(int newLevel)
+    {
+        level = newLevel;
+        UpdateUI();
     }
 
     public void TryUpgrade()
@@ -60,10 +79,11 @@ public class Base : MonoBehaviourPunCallbacks
         
         if (woodItem != null && woodItem.Amount >= cost)
         {
-           
             woodItem.Amount -= cost;
             level++;
             
+            // Sync level across network
+            pw.RPC("UpdateLevel", RpcTarget.All, level);
             
             Inventory.Instance.UpdateUI();
             UpdateUI();
