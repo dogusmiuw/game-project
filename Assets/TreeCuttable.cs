@@ -28,9 +28,15 @@ public class TreeCuttable : MonoBehaviour
     // This method is called when the tree is fully chopped
     private void ChopTree()
     {
-        // Optionally: Add logic to reward player with wood
         Debug.Log("Tree chopped down!");
-        Destroy(gameObject); // Destroy the tree object
+        Destroy(gameObject);
         Inventory.Instance.GetWood();
+        
+        // Find and update all bases
+        Base[] bases = FindObjectsOfType<Base>();
+        foreach(Base baseObj in bases)
+        {
+            baseObj.UpdateUI();
+        }
     }
 }

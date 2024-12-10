@@ -60,7 +60,7 @@ public class Inventory : MonoBehaviour
     }
 
     // Helper method to find an item by its name
-    private Item FindItem(string key)
+    public Item FindItem(string key)
     {
         foreach (Item item in items)
         {
@@ -73,7 +73,7 @@ public class Inventory : MonoBehaviour
     }
 
     // Method to update the UI text for wood and food counts
-    private void UpdateUI()
+    public void UpdateUI()
     {
         // Update the wood count UI
         Item woodItem = FindItem("Wood");
