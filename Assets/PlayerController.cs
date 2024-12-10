@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private TreeCuttable detectedTree = null;
-
+    private MobSelector mobSelector;
 
     //Inventory inventory;
     Animator animator;
@@ -16,7 +16,11 @@ public class PlayerController : MonoBehaviour
         //inventory = GetComponent<Inventory>();
         pw = GetComponent<PhotonView>();
         animator = GetComponent<Animator>();
-
+        mobSelector = FindObjectOfType<MobSelector>();
+    }
+    private bool IsSelected()
+    {
+        return mobSelector != null && mobSelector.IsMobSelected(gameObject);
     }
 
     void Update()
@@ -100,21 +104,20 @@ public class PlayerController : MonoBehaviour
 
     private bool InteractWithMovement()
     {
-
         RaycastHit hit;
         bool hasHit = Physics.Raycast(GetMouseRay(), out hit);
         if (hasHit)
         {
-            if (Input.GetMouseButton(1))
+            if (Input.GetMouseButton(1) && IsSelected())
             {
                 GetComponent<Mover>().MoveTo(hit.point);
                 Debug.Log("Move");
+                return true;
             }
-            return true;
-
         }
         return false;
     }
+
     private static Ray GetMouseRay()
     {
         return Camera.main.ScreenPointToRay(Input.mousePosition);
