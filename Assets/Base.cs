@@ -11,8 +11,8 @@ public class Base : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject upgradeButton;
     
     private PhotonView pw;
-    private int[] upgradeCosts = new int[] { 5, 10, 15, 20, 25 }; // Wood costs for each level
-    private const int MAX_LEVEL = 5;
+    private int[] upgradeCosts = new int[] { 1,2,3}; // Wood costs for each level
+    private const int MAX_LEVEL =3 ;
 
     void Start()
     {
@@ -22,26 +22,31 @@ public class Base : MonoBehaviourPunCallbacks
 
     void UpdateUI()
     {
-        if (levelText != null)
-        {
-            levelText.text = $"Level: {level}";
-        }
+        Debug.Log($"Wood amount: {(Inventory.Instance.FindItem("Wood")?.Amount ?? 0)}");
         
         if (upgradeButton != null)
         {
-            // Only show upgrade button if not max level and player owns this base
             bool canShowButton = level < MAX_LEVEL && 
                 ((pw.IsMine && gameObject.name == "Base1") || 
                 (!pw.IsMine && gameObject.name == "Base2"));
                 
-            upgradeButton.SetActive(canShowButton);
+            Debug.Log($"Can Show Button: {canShowButton}");
+            Debug.Log($"IsMine: {pw.IsMine}");
+            Debug.Log($"GameObject name: {gameObject.name}");
             
-            // Check if player has enough wood
-            if (canShowButton)
+            upgradeButton.SetActive(true);
+            
+            int cost = GetUpgradeCost();
+            Item woodItem = Inventory.Instance.FindItem("Wood");
+            bool hasEnoughWood = woodItem != null && woodItem.Amount >= cost;
+            
+            Debug.Log($"Has enough wood: {hasEnoughWood}, Cost: {cost}, Wood amount: {woodItem?.Amount ?? 0}");
+            
+            UnityEngine.UI.Button buttonComponent = upgradeButton.GetComponent<UnityEngine.UI.Button>();
+            if (buttonComponent != null)
             {
-                Item woodItem = Inventory.Instance.FindItem("Wood");
-                bool hasEnoughWood = woodItem != null && woodItem.Amount >= GetUpgradeCost();
-                upgradeButton.GetComponent<UnityEngine.UI.Button>().interactable = hasEnoughWood;
+                buttonComponent.interactable = hasEnoughWood && canShowButton;
+                Debug.Log($"Button interactable: {buttonComponent.interactable}");
             }
         }
     }
@@ -55,11 +60,11 @@ public class Base : MonoBehaviourPunCallbacks
         
         if (woodItem != null && woodItem.Amount >= cost)
         {
-            // Deduct wood and increase level
+           
             woodItem.Amount -= cost;
             level++;
             
-            // Update UI
+            
             Inventory.Instance.UpdateUI();
             UpdateUI();
         }
