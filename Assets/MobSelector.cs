@@ -12,6 +12,11 @@ public class MobSelector : MonoBehaviour
     Material selectedMobMaterial;
     private Dictionary<GameObject, bool> mobSelectionStates = new Dictionary<GameObject, bool>();
 
+    public bool IsMobSelected(GameObject mob)
+    {
+        return mobSelectionStates.ContainsKey(mob) && mobSelectionStates[mob];
+    }
+
     void Start()
     {
         mainCamera = Camera.main;
