@@ -18,6 +18,6 @@ merge pull request'e **tıklama!!!**.
 
 ## pull request kontrolü
 
-kodlara bakılcak sonra abi okeydir denince mergelencek. (conflict çıkarsa %90 siktir ediyoruz
+kodlara bakılcak sonra abi okeydir denince mergelencek. 
 
 
