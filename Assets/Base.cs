@@ -18,12 +18,26 @@ public class Base : MonoBehaviourPunCallbacks
     void Start()
     {
         pw = GetComponent<PhotonView>();
+        if (pw == null)
+        {
+            Debug.LogError("PhotonView component not found on Base object", this);
+            return;
+        }
         UpdateUI();
     }
 
    public void UpdateUI()
     {
-        Debug.Log($"Wood amount: {(Inventory.Instance.FindItem("Wood")?.Amount ?? 0)}");
+        if (pw == null)
+        {
+            Debug.LogError("PhotonView not initialized", this);
+            return;
+        }
+
+        if (Inventory.Instance != null)
+        {
+            Debug.Log($"Wood amount: {(Inventory.Instance.FindItem("Wood")?.Amount ?? 0)}");
+        }
         
         if (levelText != null)
         {
@@ -36,29 +50,28 @@ public class Base : MonoBehaviourPunCallbacks
                 ((pw.IsMine && gameObject.name == "Base1") || 
                 (!pw.IsMine && gameObject.name == "Base2"));
                 
-            Debug.Log($"Can Show Button: {canShowButton}");
-            Debug.Log($"IsMine: {pw.IsMine}");
-            Debug.Log($"GameObject name: {gameObject.name}");
+            upgradeButton.SetActive(canShowButton);
             
-            upgradeButton.SetActive(true);
-            
-            int cost = GetUpgradeCost();
-            Item woodItem = Inventory.Instance.FindItem("Wood");
-            bool hasEnoughWood = woodItem != null && woodItem.Amount >= cost;
-            
-            Debug.Log($"Has enough wood: {hasEnoughWood}, Cost: {cost}, Wood amount: {woodItem?.Amount ?? 0}");
-            
-            UnityEngine.UI.Button buttonComponent = upgradeButton.GetComponent<UnityEngine.UI.Button>();
-            if (buttonComponent != null)
+            if (Inventory.Instance != null)
             {
-                buttonComponent.interactable = hasEnoughWood && canShowButton;
+                int cost = GetUpgradeCost();
+                Item woodItem = Inventory.Instance.FindItem("Wood");
+                bool hasEnoughWood = woodItem != null && woodItem.Amount >= cost;
                 
-                ColorBlock colors = buttonComponent.colors;
-                colors.disabledColor = new Color(0.7f, 0.7f, 0.7f, 0.5f);
-                colors.normalColor = Color.white;
-                buttonComponent.colors = colors;
+                Debug.Log($"Has enough wood: {hasEnoughWood}, Cost: {cost}, Wood amount: {woodItem?.Amount ?? 0}");
                 
-                Debug.Log($"Button interactable: {buttonComponent.interactable}");
+                UnityEngine.UI.Button buttonComponent = upgradeButton.GetComponent<UnityEngine.UI.Button>();
+                if (buttonComponent != null)
+                {
+                    buttonComponent.interactable = hasEnoughWood && canShowButton;
+                    
+                    ColorBlock colors = buttonComponent.colors;
+                    colors.disabledColor = new Color(0.7f, 0.7f, 0.7f, 0.5f);
+                    colors.normalColor = Color.white;
+                    buttonComponent.colors = colors;
+                    
+                    Debug.Log($"Button interactable: {buttonComponent.interactable}");
+                }
             }
         }
     }
