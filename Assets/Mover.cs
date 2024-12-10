@@ -20,6 +20,7 @@ public class Mover : MonoBehaviour
         agent.isStopped = false;
         agent.ResetPath();
         agent.destination = destination;
+        agent.avoidancePriority = UnityEngine.Random.Range(0, 100);
     }
 
     private void UpdateAnimator()
